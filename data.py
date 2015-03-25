@@ -1,4 +1,4 @@
-# coding=utf8
+# coding=utf-8
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -58,11 +58,11 @@ class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
     content = db.Column(db.Text)
-    status = db.Column(db.Integer, default=1)  #0, 草稿、1, 完成、-1,  失效
+    status = db.Column(db.Integer, default=1)  # 0, 草稿、1, 完成、-1,  失效
     created_time = db.Column(db.DateTime, default=datetime.now)
     modified_time = db.Column(db.DateTime, default=datetime.now)
-    is_always_above = db.Column(db.Integer, default=0)  #置顶 0,1
-    share = db.Column(db.Integer, default=0)  #分享到社交网络
+    is_always_above = db.Column(db.Integer, default=0)  # 置顶 0,1
+    share = db.Column(db.Integer, default=0)  # 分享到社交网络
     click_count = db.Column(db.Integer, default=0)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     category = db.relationship('Category', backref=db.backref('articles', lazy='dynamic'), lazy='select')
@@ -79,10 +79,10 @@ class Comment(db.Model):
     username = db.Column(db.String(50))
     email_address = db.Column(db.String(80))
     site = db.Column(db.String(100))
-    avatar = db.Column(db.String(100))  #头像
+    avatar = db.Column(db.String(100))  # 头像
     content = db.Column(db.Text)
     post_date = db.Column(db.DateTime, default=datetime.now)
-    visible = db.Column(db.Integer, default=1)  #是否展示
+    visible = db.Column(db.Integer, default=1)  # 是否展示
     ip = db.Column(db.String(15))
     reply_to_comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
     reply_to_comment = db.relationship('Comment', backref='comments', remote_side=[id])
@@ -95,7 +95,7 @@ class Comment(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    #social account
+    # social account
     uid = db.Column(db.BigInteger)
     name = db.Column(db.String(50))
     avatar = db.Column(db.String(100))
@@ -109,7 +109,7 @@ class User(db.Model):
 class Link(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    site = db.Column(db.String(100))  #url
+    site = db.Column(db.String(100))  # url
 
     def __unicode__(self):
         return self.name

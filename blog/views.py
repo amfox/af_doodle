@@ -1,9 +1,9 @@
-# coding=utf8
+# coding=utf-8
 
 import time
 import json
 from StringIO import StringIO
-from flask import (Blueprint, request, render_template, redirect, g, url_for, abort)
+from flask import Blueprint, request, render_template, redirect, g, url_for, abort
 import html2text
 from werkzeug.utils import secure_filename
 from blog.admin import *  #

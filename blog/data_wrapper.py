@@ -1,7 +1,7 @@
 # coding=utf8
+from sqlalchemy import or_, and_
 
 from data import *
-from sqlalchemy import and_, or_
 
 
 class DataWrapper(object):
@@ -16,7 +16,7 @@ class DataWrapper(object):
         tag_list = tags.split()
         for name in tag_list:
             # 不需要lower限制，默认就是忽略大小写的
-            #t = db.session.query(Tag).filter( func.lower(Tag.name)==name.lower() ).first()
+            # t = db.session.query(Tag).filter( func.lower(Tag.name)==name.lower() ).first()
             t = db.session.query(Tag).filter(Tag.name == name).first()
             if not t:
                 t = Tag(name=name)
