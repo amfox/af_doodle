@@ -1,13 +1,13 @@
-weblog
+af_doodle
 ======
 
-个人博客。
+
 
 
 
 Download
 --------
-    $ git clone https://github.com/ghostrong/weblog.git
+
 
 Quick Start
 -----------

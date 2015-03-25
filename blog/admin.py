@@ -1,13 +1,13 @@
-#coding=utf8
+# coding=utf-8
 
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from myapp import app
-from data import (db, Category, Tag, Article, Comment, User,\
-                    Link, BlackList, Subscriber)
+from data import (db, Category, Tag, Article, Comment, User, \
+                  Link, BlackList, Subscriber)
 
 
-class MyModelView( ModelView ):
+class MyModelView(ModelView):
     def is_accessible(self):
         return True
 

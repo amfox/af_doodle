@@ -1,21 +1,19 @@
-#coding=utf8
+# coding=utf8
 
-from datetime import datetime
 import time
 import json
 from StringIO import StringIO
-from html_convert import html2text
-from werkzeug import secure_filename
 from flask import (Blueprint, request, render_template, redirect, g, url_for, abort)
-from myapp import app
-from data import *
+import html2text
+from werkzeug.utils import secure_filename
 from blog.admin import *  #
 from blog.data_wrapper import DataWrapper
+
 dw = DataWrapper()
 
 blog = Blueprint('blog', __name__,
-    template_folder='templates',
-    )
+                 template_folder='templates',
+)
 
 # Global
 USER = {
@@ -37,31 +35,42 @@ USER = {
 # filters
 
 Mons = {
-    '1':u'一',
-    '2':u'二',
-    '3':u'三',
-    '4':u'四',
-    '5':u'五',
-    '6':u'六',
-    '7':u'七',
-    '8':u'八',
-    '9':u'九',
-    '10':u'十',
-    '11':u'十一',
-    '12':u'十二'
+    '1': u'一',
+    '2': u'二',
+    '3': u'三',
+    '4': u'四',
+    '5': u'五',
+    '6': u'六',
+    '7': u'七',
+    '8': u'八',
+    '9': u'九',
+    '10': u'十',
+    '11': u'十一',
+    '12': u'十二'
 }
+
+
 def _timestr0(dt):
     mon = Mons[str(dt.month)]
     return u'%s月<span>%d</span>' % (mon, dt.day)
+
+
 app.jinja_env.filters['timestr0'] = _timestr0
+
 
 def _timestr1(dt):
     return '%d:%d' % ( dt.hour, dt.minute )
+
+
 app.jinja_env.filters['timestr1'] = _timestr1
+
 
 def _timestr2(dt):
     return u'%d年%d月%d日 %d:%d:%d' % ( dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second )
+
+
 app.jinja_env.filters['timestr2'] = _timestr2
+
 
 def _html2text(html):
     sio = StringIO()
@@ -69,6 +78,8 @@ def _html2text(html):
     text = sio.getvalue()
     sio.close()
     return text
+
+
 app.jinja_env.filters['html2text'] = _html2text
 
 # end of filters
@@ -88,6 +99,7 @@ def _global_maps():
     }
     return maps
 
+
 @blog.route('/')
 @blog.route('/page/<int:pid>')
 def index(pid=1):
@@ -97,52 +109,52 @@ def index(pid=1):
     if not p.total:
         pagination = [0]
     elif p.total % per_page:
-        pagination = range( 1, p.total/per_page + 2 )
+        pagination = range(1, p.total / per_page + 2)
     else:
-        pagination = range( 1, p.total/per_page + 1 )
+        pagination = range(1, p.total / per_page + 1)
 
     return render_template('blog/index.html',
-        articles=articles,
-        pid=pid,
-        pagination=pagination[:10],
-        last_page = pagination[-1],
-        nav_current="index",
-        **_global_maps()
-        )
+                           articles=articles,
+                           pid=pid,
+                           pagination=pagination[:10],
+                           last_page=pagination[-1],
+                           nav_current="index",
+                           **_global_maps()
+    )
 
 
 @blog.route('/category/')
 @blog.route('/category/<int:cid>')
 def category(cid=0):
     if cid != 0:
-        return redirect( url_for('.search',category=cid) )
+        return redirect(url_for('.search', category=cid))
     return render_template('blog/category.html',
-        nav_current="category",
-        **_global_maps()
-        )
+                           nav_current="category",
+                           **_global_maps()
+    )
 
 
 @blog.route('/contact/')
 def contact():
-    article = dw.get_article_by_id(1) #id=1, the default article
+    article = dw.get_article_by_id(1)  # id=1, the default article
     if not article:
         dw.create_article('default', 'default', '', None)
-        article = dw.get_article_by_id(1) #id=1, the default article
-    comments = article.comments.order_by(Comment.post_date).all() #升序排序
+        article = dw.get_article_by_id(1)  # id=1, the default article
+    comments = article.comments.order_by(Comment.post_date).all()  # 升序排序
     return render_template('blog/contact.html',
-        article=article,
-        comments=comments,
-        nav_current="contact",
-        **_global_maps()
-        )
+                           article=article,
+                           comments=comments,
+                           nav_current="contact",
+                           **_global_maps()
+    )
 
 
 @blog.route('/about/')
 def about():
     return render_template('blog/about.html',
-        nav_current="about",
-        **_global_maps()
-        )
+                           nav_current="about",
+                           **_global_maps()
+    )
 
 
 @blog.route('/article/<int:id>')
@@ -150,13 +162,13 @@ def article(id):
     article = dw.get_article_by_id(id)
     if not article:
         abort(404)
-        #return '404'
-    comments = article.comments.order_by(Comment.post_date).all() #升序排序
+        # return '404'
+    comments = article.comments.order_by(Comment.post_date).all()  # 升序排序
     return render_template('blog/article.html',
-        article=article,
-        comments=comments,
-        **_global_maps()
-        )
+                           article=article,
+                           comments=comments,
+                           **_global_maps()
+    )
 
 
 @blog.route('/new_comment', methods=['POST'])
@@ -172,7 +184,7 @@ def new_comment():
     reply_to_comment_id = request.form.get('reply_to_comment', None)
 
     c = dw.create_comment(username, email_address, site, avatar, content, ip, \
-                        reply_to_comment_id, int(article_id))
+                          reply_to_comment_id, int(article_id))
     avatar = c.avatar
     if not avatar:
         avatar = '/static/blog/coolblue/images/gravatar.jpg'
@@ -218,11 +230,12 @@ def new_comment():
 
 @blog.route('/tag/<int:tid>')
 def tag(tid):
-    return redirect( url_for('.search',tag=tid) )
+    return redirect(url_for('.search', tag=tid))
+
 
 @blog.route('/search/')
 def search():
-    category_id = request.args.get('category','')
+    category_id = request.args.get('category', '')
     tag_id = request.args.get('tag', '')
     category = ''
     tag = ''
@@ -243,18 +256,18 @@ def search():
             articles = []
         search = 'tag'
     else:
-        #暂不分页, 很锉的一个搜索
+        # 暂不分页, 很锉的一个搜索
         keywords = request.args.get('q', '')
         articles = dw.search_article(keywords)
-        search = 'search' #标记是关键词搜索还是博客分类
+        search = 'search'  # 标记是关键词搜索还是博客分类
 
     return render_template('blog/search_results.html',
-        search=search,
-        articles=articles,
-        total = len(articles),
-        category = category,
-        tag=tag,
-        **_global_maps()
+                           search=search,
+                           articles=articles,
+                           total=len(articles),
+                           category=category,
+                           tag=tag,
+                           **_global_maps()
     )
 
 
@@ -262,12 +275,13 @@ def search():
 def upload():
     f = request.files.get('imgFile', None)
     if not f:
-        data = {'error':1, 'message':'No File Found!'}
+        data = {'error': 1, 'message': 'No File Found!'}
         return json.dumps(data)
     filename = str(int(time.time())) + '_' + secure_filename(f.filename)
-    s = sae.storage.Client()
-    ob = sae.storage.Object(f.read())
-    s.put('upload', filename, ob)
-    url = s.url('upload', filename)
-    data = {'error':0, 'url':url}
+    # s = sae.storage.Client()
+    # ob = sae.storage.Object(f.read())
+    # s.put('upload', filename, ob)
+    # url = s.url('upload', filename)
+    url = "test DOTO"
+    data = {'error': 0, 'url': url}
     return json.dumps(data)

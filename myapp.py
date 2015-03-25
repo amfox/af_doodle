@@ -1,14 +1,15 @@
-#coding=utf8
+# coding=utf-8
 
 import sys
 import os
+from flask import Flask
+
 abspath = os.path.abspath(__file__)
 app_root = os.path.dirname(abspath)
 path = os.path.join(app_root, 'virtualenv.bundle')
 sys.path.insert(0, path)
 sys.path.insert(0, app_root)
 
-from flask import Flask
 app = Flask(__name__)
 app.config.from_object('config')
 from views import *
